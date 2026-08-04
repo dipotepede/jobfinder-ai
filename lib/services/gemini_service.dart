@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class GeminiService {
-  static const String _apiKey =
-      'AQ.Ab8RN6Kxqxh_jUSBrCeqJwrDMF_aBoYDeUz3Z5giEc9gnbgZ8A';
+  // Replace the hardcoded string with an environment lookup
+  static const String _apiKey = String.fromEnvironment(
+    'GEMINI_API_KEY',
+    defaultValue: '',
+  );
 
   static const String _modelName = 'gemini-1.5-flash-latest';
 
@@ -14,12 +17,11 @@ class GeminiService {
     final model = GenerativeModel(
       model: _modelName,
       apiKey: _apiKey,
-      generationConfig: GenerationConfig(
-        responseMimeType: 'application/json',
-      ),
+      generationConfig: GenerationConfig(responseMimeType: 'application/json'),
     );
 
-    final prompt = '''
+    final prompt =
+        '''
     You are an elite Senior Business Analyst and Technical Talent Auditor.
     Perform an exhaustive diagnostic of the candidate background against their target profile or seniority level.
 
@@ -59,7 +61,10 @@ class GeminiService {
       final response = await model.generateContent([Content.text(prompt)]);
       if (response.text != null && response.text!.isNotEmpty) {
         String cleanJson = response.text!.trim();
-        cleanJson = cleanJson.replaceAll('```json', '').replaceAll('```', '').trim();
+        cleanJson = cleanJson
+            .replaceAll('```json', '')
+            .replaceAll('```', '')
+            .trim();
         return jsonDecode(cleanJson) as Map<String, dynamic>;
       }
     } catch (e) {
@@ -75,21 +80,21 @@ class GeminiService {
       "leadershipComm": 85,
       "strengths": [
         "Certified expertise in Project Management & Process Quality (PMP, ICBB).",
-        "Advanced background in structured research and technical consulting."
+        "Advanced background in structured research and technical consulting.",
       ],
       "weaknesses": [
         "Metrics missing direct correlation to software release cycles.",
-        "ATS structural headers optimization required."
+        "ATS structural headers optimization required.",
       ],
       "recommendedJobs": [
         "Senior Business Systems Analyst",
         "PMO Lead / Enterprise Consultant",
-        "Continuous Improvement Director"
+        "Continuous Improvement Director",
       ],
       "criticalGaps": [
         "Quantifiable operational yield metrics missing.",
-        "Targeted remote enterprise role keyword placement."
-      ]
+        "Targeted remote enterprise role keyword placement.",
+      ],
     };
   }
 
@@ -97,12 +102,10 @@ class GeminiService {
     required String targetRole,
     required String rawBullet,
   }) async {
-    final model = GenerativeModel(
-      model: _modelName,
-      apiKey: _apiKey,
-    );
+    final model = GenerativeModel(model: _modelName, apiKey: _apiKey);
 
-    final prompt = '''
+    final prompt =
+        '''
     You are an Executive Resume Writer and ATS Optimization Specialist.
     Completely restructure, expand, and optimize the following candidate experience bullet point, thesis title, or raw job description for the target role: "$targetRole".
 
